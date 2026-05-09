@@ -1,0 +1,23 @@
+<!-- Example: room1.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Room 1 - UM Cottage</title>
+  <style>
+    body { font-family: Arial; padding: 20px; background: #f7f9fc; }
+    h1 { text-align: center; }
+    .back { margin-top: 20px; display: block; text-align: center; }
+  </style>
+</head>
+<body>
+  <h1>Room 1 Details</h1>
+  <p>Tenant Name: <span id="tenantName"></span></p>
+  <a class="back" href="index.html">Back to Home</a>
+  <script>
+    const roomsData = JSON.parse(localStorage.getItem('umCottageRooms')) || [];
+    const room = roomsData.find(r => r.number === 1);
+    document.getElementById('tenantName').textContent = room ? room.tenant : '';
+  </script>
+</body>
+</html>
