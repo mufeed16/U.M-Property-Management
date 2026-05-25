@@ -33,7 +33,7 @@ const seed = async () => {
       { roomNumber: 5, floor: 'First Floor', capacity: 1, rentAmount: 4000, amenities: ['WiFi', 'AC', 'Private Bathroom', 'Queen-sized bed', 'Flat-screen TV', 'Mini fridge'], description: 'Upper floor room with balcony and city view.' },
       { roomNumber: 6, floor: 'First Floor', capacity: 1, rentAmount: 4000, amenities: ['WiFi', 'AC', 'Private Bathroom', 'Queen-sized bed', 'Flat-screen TV', 'Mini fridge'], description: 'Premium room with extra space and modern furnishings.' },
       { roomNumber: 7, floor: 'First Floor', capacity: 1, rentAmount: 4000, amenities: ['WiFi', 'AC', 'Private Bathroom', 'Queen-sized bed', 'Flat-screen TV', 'Mini fridge'], description: 'Quiet room ideal for professionals and students.' },
-      { roomNumber: 8, floor: 'First Floor', capacity: 2, rentAmount: 5500, amenities: ['WiFi', 'AC', 'Private Bathroom', 'Queen-sized bed', 'Flat-screen TV', 'Mini fridge'], description: 'Large room with double capacity, perfect for sharing.' },
+      { roomNumber: 8, floor: 'First Floor', capacity: 2, rentAmount: 5000, amenities: ['WiFi', 'AC', 'Private Bathroom', 'Queen-sized bed', 'Flat-screen TV', 'Mini fridge'], description: 'Large room with double capacity, perfect for sharing.' },
     ];
 
     const rooms = await Room.insertMany(roomsData);
