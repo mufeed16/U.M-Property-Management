@@ -39,129 +39,133 @@ export function RoomsListPage() {
   };
 
   return (
-    <div className="space-y-6">
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+    <div className="space-y-4 lg:space-y-6">
+      <div className="flex items-center justify-between gap-4">
         <div>
-          <h2 className="text-2xl font-bold text-gray-900">Rooms</h2>
-          <p className="text-gray-500 mt-1">Manage your property rooms</p>
+          <h2 className="text-xl lg:text-2xl font-bold text-gray-800">Rooms</h2>
+          <p className="text-sm text-gray-500 mt-0.5">{rooms.length} total rooms</p>
         </div>
         <Link
           to="/rooms/new"
-          className="inline-flex items-center gap-2 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors"
+          className="btn-3d inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-white font-medium text-sm"
+          style={{ background: 'linear-gradient(135deg, #3b82f6, #6366f1)' }}
         >
           <HiOutlinePlus className="w-5 h-5" />
-          Add Room
+          <span className="hidden sm:inline">Add Room</span>
         </Link>
       </div>
 
-      {error && (
-        <div className="bg-red-50 text-red-600 p-4 rounded-lg">{error}</div>
-      )}
+      {error && <div className="bg-red-50 border border-red-200 text-red-700 p-3 rounded-xl text-sm">{error}</div>}
 
-      {/* Filter */}
-      <div className="flex gap-2 flex-wrap">
+      {/* Filter chips */}
+      <div className="flex gap-2 overflow-x-auto pb-1 -mx-1 px-1">
         {['all', 'occupied', 'vacant', 'maintenance'].map((status) => (
           <button
             key={status}
             onClick={() => setFilter(status)}
-            className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
-              filter === status
-                ? 'bg-blue-600 text-white'
-                : 'bg-white text-gray-600 hover:bg-gray-100 border border-gray-200'
-            }`}
+            className="px-3 py-1.5 rounded-full text-xs font-medium whitespace-nowrap transition-all"
+            style={filter === status ? {
+              background: 'linear-gradient(135deg, rgba(59, 130, 246, 0.15), rgba(99, 102, 241, 0.1))',
+              border: '1px solid rgba(59, 130, 246, 0.25)',
+              color: '#2563eb',
+            } : {
+              background: 'rgba(255, 255, 255, 0.5)',
+              border: '1px solid rgba(0, 0, 0, 0.08)',
+              color: '#6b7280',
+            }}
           >
             {status === 'all' ? 'All' : statusConfig[status].label}
-            <span className="ml-2 text-xs opacity-75">
+            <span className="ml-1 opacity-60">
               ({status === 'all' ? rooms.length : rooms.filter(r => r.status === status).length})
             </span>
           </button>
         ))}
       </div>
 
-      {/* Table */}
-      <div className="bg-white rounded-lg shadow-md overflow-hidden">
-        <div className="overflow-x-auto">
+      {/* Mobile: Card layout / Desktop: Table */}
+      <div className="space-y-3 lg:space-y-0">
+        {/* Mobile cards */}
+        <div className="lg:hidden space-y-3">
+          {filteredRooms.length === 0 ? (
+            <div className="glass-card rounded-2xl p-8 text-center text-gray-400 text-sm">No rooms found</div>
+          ) : (
+            filteredRooms.map((room) => (
+              <div key={room._id} className="glass-card rounded-2xl p-4">
+                <div className="flex items-start justify-between mb-3">
+                  <div>
+                    <h4 className="font-bold text-gray-800 text-lg">Room {room.roomNumber}</h4>
+                    <p className="text-xs text-gray-500">{room.floor}</p>
+                  </div>
+                  <Badge variant={statusConfig[room.status].variant}>{statusConfig[room.status].label}</Badge>
+                </div>
+                <div className="flex items-center justify-between">
+                  <div className="flex gap-4 text-sm">
+                    <div>
+                      <span className="text-gray-400">Tenant</span>
+                      <p className="text-gray-700 font-medium">{room.tenant?.name || '—'}</p>
+                    </div>
+                    <div>
+                      <span className="text-gray-400">Rent</span>
+                      <p className="text-gray-700 font-medium">₹{room.rentAmount}</p>
+                    </div>
+                  </div>
+                  <div className="flex gap-1">
+                    <Link to={`/rooms/${room._id}/edit`} className="p-2 text-gray-400 hover:text-blue-600 rounded-lg">
+                      <HiOutlinePencil className="w-4 h-4" />
+                    </Link>
+                    <button onClick={() => setDeleteModal(room)} className="p-2 text-gray-400 hover:text-red-600 rounded-lg">
+                      <HiOutlineTrash className="w-4 h-4" />
+                    </button>
+                  </div>
+                </div>
+              </div>
+            ))
+          )}
+        </div>
+
+        {/* Desktop table */}
+        <div className="hidden lg:block glass-card rounded-2xl overflow-hidden">
           <table className="w-full">
-            <thead className="bg-gray-50 border-b border-gray-200">
-              <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Room #</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Floor</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tenant</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Rent</th>
-                <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+            <thead>
+              <tr style={{ borderBottom: '1px solid rgba(0,0,0,0.06)' }}>
+                <th className="px-6 py-4 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Room #</th>
+                <th className="px-6 py-4 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Floor</th>
+                <th className="px-6 py-4 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Status</th>
+                <th className="px-6 py-4 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Tenant</th>
+                <th className="px-6 py-4 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Rent</th>
+                <th className="px-6 py-4 text-right text-xs font-medium text-gray-400 uppercase tracking-wider">Actions</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-gray-200">
-              {filteredRooms.length === 0 ? (
-                <tr>
-                  <td colSpan="6" className="px-6 py-8 text-center text-gray-500">
-                    No rooms found
+            <tbody className="divide-y divide-gray-100">
+              {filteredRooms.map((room) => (
+                <tr key={room._id} className="hover:bg-blue-50/30 transition-colors">
+                  <td className="px-6 py-4 font-semibold text-gray-800">{room.roomNumber}</td>
+                  <td className="px-6 py-4 text-gray-600">{room.floor}</td>
+                  <td className="px-6 py-4"><Badge variant={statusConfig[room.status].variant}>{statusConfig[room.status].label}</Badge></td>
+                  <td className="px-6 py-4 text-gray-600">{room.tenant?.name || '—'}</td>
+                  <td className="px-6 py-4 text-gray-600">₹{room.rentAmount}</td>
+                  <td className="px-6 py-4 text-right">
+                    <div className="flex items-center justify-end gap-2">
+                      <Link to={`/rooms/${room._id}/edit`} className="p-2 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-all">
+                        <HiOutlinePencil className="w-5 h-5" />
+                      </Link>
+                      <button onClick={() => setDeleteModal(room)} className="p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-all">
+                        <HiOutlineTrash className="w-5 h-5" />
+                      </button>
+                    </div>
                   </td>
                 </tr>
-              ) : (
-                filteredRooms.map((room) => (
-                  <tr key={room._id} className="hover:bg-gray-50 transition-colors">
-                    <td className="px-6 py-4 whitespace-nowrap font-medium text-gray-900">
-                      {room.roomNumber}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-gray-600">
-                      {room.floor}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <Badge variant={statusConfig[room.status].variant}>
-                        {statusConfig[room.status].label}
-                      </Badge>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-gray-600">
-                      {room.tenant?.name || '—'}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-gray-600">
-                      ${room.rentAmount}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-right">
-                      <div className="flex items-center justify-end gap-2">
-                        <Link
-                          to={`/rooms/${room._id}/edit`}
-                          className="p-2 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
-                          title="Edit"
-                        >
-                          <HiOutlinePencil className="w-5 h-5" />
-                        </Link>
-                        <button
-                          onClick={() => setDeleteModal(room)}
-                          className="p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
-                          title="Delete"
-                        >
-                          <HiOutlineTrash className="w-5 h-5" />
-                        </button>
-                      </div>
-                    </td>
-                  </tr>
-                ))
-              )}
+              ))}
             </tbody>
           </table>
         </div>
       </div>
 
-      {/* Delete Modal */}
       <Modal isOpen={!!deleteModal} onClose={() => setDeleteModal(null)} title="Delete Room">
-        <p className="text-gray-600 mb-4">
-          Are you sure you want to delete Room {deleteModal?.roomNumber}? This action cannot be undone.
-        </p>
+        <p className="text-gray-600 mb-6 text-sm">Delete Room <strong>{deleteModal?.roomNumber}</strong>? This cannot be undone.</p>
         <div className="flex justify-end gap-3">
-          <button
-            onClick={() => setDeleteModal(null)}
-            className="px-4 py-2 text-gray-600 hover:bg-gray-100 rounded-lg transition-colors"
-          >
-            Cancel
-          </button>
-          <button
-            onClick={handleDelete}
-            disabled={deleting}
-            className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 disabled:opacity-50 transition-colors"
-          >
+          <button onClick={() => setDeleteModal(null)} className="px-4 py-2 rounded-xl text-gray-500 hover:bg-gray-100 text-sm">Cancel</button>
+          <button onClick={handleDelete} disabled={deleting} className="btn-3d px-5 py-2 bg-red-500 text-white rounded-xl hover:bg-red-600 disabled:opacity-50 text-sm">
             {deleting ? 'Deleting...' : 'Delete'}
           </button>
         </div>

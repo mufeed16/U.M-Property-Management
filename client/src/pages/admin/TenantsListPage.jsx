@@ -30,103 +30,100 @@ export function TenantsListPage() {
   };
 
   return (
-    <div className="space-y-6">
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+    <div className="space-y-4 lg:space-y-6">
+      <div className="flex items-center justify-between gap-4">
         <div>
-          <h2 className="text-2xl font-bold text-gray-900">Tenants</h2>
-          <p className="text-gray-500 mt-1">Manage your tenants</p>
+          <h2 className="text-xl lg:text-2xl font-bold text-gray-800">Tenants</h2>
+          <p className="text-sm text-gray-500 mt-0.5">{tenants.length} total tenants</p>
         </div>
         <Link
           to="/tenants/new"
-          className="inline-flex items-center gap-2 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors"
+          className="btn-3d inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-white font-medium text-sm"
+          style={{ background: 'linear-gradient(135deg, #3b82f6, #6366f1)' }}
         >
           <HiOutlinePlus className="w-5 h-5" />
-          Add Tenant
+          <span className="hidden sm:inline">Add Tenant</span>
         </Link>
       </div>
 
-      {error && (
-        <div className="bg-red-50 text-red-600 p-4 rounded-lg">{error}</div>
-      )}
+      {error && <div className="bg-red-50 border border-red-200 text-red-700 p-3 rounded-xl text-sm">{error}</div>}
 
-      {/* Table */}
-      <div className="bg-white rounded-lg shadow-md overflow-hidden">
-        <div className="overflow-x-auto">
-          <table className="w-full">
-            <thead className="bg-gray-50 border-b border-gray-200">
-              <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Name</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Email</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Phone</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Room</th>
-                <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-gray-200">
-              {tenants.length === 0 ? (
-                <tr>
-                  <td colSpan="5" className="px-6 py-8 text-center text-gray-500">
-                    No tenants found
-                  </td>
-                </tr>
-              ) : (
-                tenants.map((tenant) => (
-                  <tr key={tenant._id} className="hover:bg-gray-50 transition-colors">
-                    <td className="px-6 py-4 whitespace-nowrap font-medium text-gray-900">
-                      {tenant.name}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-gray-600">
-                      {tenant.email}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-gray-600">
-                      {tenant.phone || '—'}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-gray-600">
-                      {tenant.room ? `Room ${tenant.room.roomNumber}` : '—'}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-right">
-                      <div className="flex items-center justify-end gap-2">
-                        <Link
-                          to={`/tenants/${tenant._id}/edit`}
-                          className="p-2 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
-                          title="Edit"
-                        >
-                          <HiOutlinePencil className="w-5 h-5" />
-                        </Link>
-                        <button
-                          onClick={() => setDeleteModal(tenant)}
-                          className="p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
-                          title="Delete"
-                        >
-                          <HiOutlineTrash className="w-5 h-5" />
-                        </button>
-                      </div>
-                    </td>
-                  </tr>
-                ))
-              )}
-            </tbody>
-          </table>
-        </div>
+      {/* Mobile cards */}
+      <div className="lg:hidden space-y-3">
+        {tenants.length === 0 ? (
+          <div className="glass-card rounded-2xl p-8 text-center text-gray-400 text-sm">No tenants found</div>
+        ) : (
+          tenants.map((tenant) => (
+            <div key={tenant._id} className="glass-card rounded-2xl p-4">
+              <div className="flex items-start justify-between mb-3">
+                <div>
+                  <h4 className="font-bold text-gray-800 text-lg">{tenant.name}</h4>
+                  <p className="text-xs text-gray-500">{tenant.email}</p>
+                </div>
+                <div className="flex gap-1">
+                  <Link to={`/tenants/${tenant._id}/edit`} className="p-2 text-gray-400 hover:text-blue-600 rounded-lg">
+                    <HiOutlinePencil className="w-4 h-4" />
+                  </Link>
+                  <button onClick={() => setDeleteModal(tenant)} className="p-2 text-gray-400 hover:text-red-600 rounded-lg">
+                    <HiOutlineTrash className="w-4 h-4" />
+                  </button>
+                </div>
+              </div>
+              <div className="flex gap-4 text-sm">
+                <div>
+                  <span className="text-gray-400">Phone</span>
+                  <p className="text-gray-700">{tenant.phone || '—'}</p>
+                </div>
+                <div>
+                  <span className="text-gray-400">Room</span>
+                  <p className="text-gray-700">{tenant.room ? `Room ${tenant.room.roomNumber}` : '—'}</p>
+                </div>
+              </div>
+            </div>
+          ))
+        )}
       </div>
 
-      {/* Delete Modal */}
+      {/* Desktop table */}
+      <div className="hidden lg:block glass-card rounded-2xl overflow-hidden">
+        <table className="w-full">
+          <thead>
+            <tr style={{ borderBottom: '1px solid rgba(0,0,0,0.06)' }}>
+              <th className="px-6 py-4 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Name</th>
+              <th className="px-6 py-4 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Email</th>
+              <th className="px-6 py-4 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Phone</th>
+              <th className="px-6 py-4 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Room</th>
+              <th className="px-6 py-4 text-right text-xs font-medium text-gray-400 uppercase tracking-wider">Actions</th>
+            </tr>
+          </thead>
+          <tbody className="divide-y divide-gray-100">
+            {tenants.map((tenant) => (
+              <tr key={tenant._id} className="hover:bg-blue-50/30 transition-colors">
+                <td className="px-6 py-4 font-semibold text-gray-800">{tenant.name}</td>
+                <td className="px-6 py-4 text-gray-600">{tenant.email}</td>
+                <td className="px-6 py-4 text-gray-600">{tenant.phone || '—'}</td>
+                <td className="px-6 py-4 text-gray-600">{tenant.room ? `Room ${tenant.room.roomNumber}` : '—'}</td>
+                <td className="px-6 py-4 text-right">
+                  <div className="flex items-center justify-end gap-2">
+                    <Link to={`/tenants/${tenant._id}/edit`} className="p-2 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-all">
+                      <HiOutlinePencil className="w-5 h-5" />
+                    </Link>
+                    <button onClick={() => setDeleteModal(tenant)} className="p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-all">
+                      <HiOutlineTrash className="w-5 h-5" />
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+
       <Modal isOpen={!!deleteModal} onClose={() => setDeleteModal(null)} title="Delete Tenant">
-        <p className="text-gray-600 mb-4">
-          Are you sure you want to delete <strong>{deleteModal?.name}</strong>? This action cannot be undone.
-        </p>
+        <p className="text-gray-600 mb-6 text-sm">Delete <strong>{deleteModal?.name}</strong>? This cannot be undone.</p>
         <div className="flex justify-end gap-3">
-          <button
-            onClick={() => setDeleteModal(null)}
-            className="px-4 py-2 text-gray-600 hover:bg-gray-100 rounded-lg transition-colors"
-          >
-            Cancel
-          </button>
-          <button
-            onClick={handleDelete}
-            disabled={deleting}
-            className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 disabled:opacity-50 transition-colors"
-          >
+          <button onClick={() => setDeleteModal(null)} className="px-4 py-2 rounded-xl text-gray-500 hover:bg-gray-100 text-sm">Cancel</button>
+          <button onClick={handleDelete} disabled={deleting} className="btn-3d px-5 py-2 bg-red-500 text-white rounded-xl hover:bg-red-600 disabled:opacity-50 text-sm">
             {deleting ? 'Deleting...' : 'Delete'}
           </button>
         </div>

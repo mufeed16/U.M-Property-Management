@@ -26,14 +26,14 @@ const seed = async () => {
 
     // Create 8 rooms
     const roomsData = [
-      { roomNumber: 1, floor: 1, capacity: 1, rentAmount: 1200, amenities: ['WiFi', 'AC', 'Private Bathroom', 'Queen-sized bed', 'Flat-screen TV', 'Mini fridge'], description: 'Comfortable ground floor room with modern amenities.' },
-      { roomNumber: 2, floor: 1, capacity: 1, rentAmount: 1200, amenities: ['WiFi', 'AC', 'Private Bathroom', 'Queen-sized bed', 'Flat-screen TV', 'Mini fridge'], description: 'Spacious room with natural lighting and garden view.' },
-      { roomNumber: 3, floor: 1, capacity: 1, rentAmount: 1100, amenities: ['WiFi', 'AC', 'Private Bathroom', 'Queen-sized bed', 'Flat-screen TV', 'Mini fridge'], description: 'Cozy room near the entrance with easy access.' },
-      { roomNumber: 4, floor: 2, capacity: 1, rentAmount: 1300, amenities: ['WiFi', 'AC', 'Private Bathroom', 'Queen-sized bed', 'Flat-screen TV', 'Mini fridge'], description: 'Upper floor room with balcony and city view.' },
-      { roomNumber: 5, floor: 2, capacity: 1, rentAmount: 1300, amenities: ['WiFi', 'AC', 'Private Bathroom', 'Queen-sized bed', 'Flat-screen TV', 'Mini fridge'], description: 'Premium room with extra space and modern furnishings.' },
-      { roomNumber: 6, floor: 2, capacity: 1, rentAmount: 1200, amenities: ['WiFi', 'AC', 'Private Bathroom', 'Queen-sized bed', 'Flat-screen TV', 'Mini fridge'], description: 'Quiet room ideal for professionals and students.' },
-      { roomNumber: 7, floor: 3, capacity: 1, rentAmount: 1400, amenities: ['WiFi', 'AC', 'Private Bathroom', 'Queen-sized bed', 'Flat-screen TV', 'Mini fridge'], description: 'Top floor room with panoramic views and privacy.' },
-      { roomNumber: 8, floor: 3, capacity: 2, rentAmount: 1600, amenities: ['WiFi', 'AC', 'Private Bathroom', 'Queen-sized bed', 'Flat-screen TV', 'Mini fridge'], description: 'Large room with double capacity, perfect for sharing.' },
+      { roomNumber: 1, floor: 'Ground Floor', capacity: 1, rentAmount: 4000, amenities: ['WiFi', 'AC', 'Private Bathroom', 'Queen-sized bed', 'Flat-screen TV', 'Mini fridge'], description: 'Comfortable ground floor room with modern amenities.' },
+      { roomNumber: 2, floor: 'Ground Floor', capacity: 1, rentAmount: 4000, amenities: ['WiFi', 'AC', 'Private Bathroom', 'Queen-sized bed', 'Flat-screen TV', 'Mini fridge'], description: 'Spacious room with natural lighting and garden view.' },
+      { roomNumber: 3, floor: 'Ground Floor', capacity: 1, rentAmount: 4000, amenities: ['WiFi', 'AC', 'Private Bathroom', 'Queen-sized bed', 'Flat-screen TV', 'Mini fridge'], description: 'Cozy room near the entrance with easy access.' },
+      { roomNumber: 4, floor: 'Ground Floor', capacity: 1, rentAmount: 5500, amenities: ['WiFi', 'AC', 'Private Bathroom', 'Queen-sized bed', 'Flat-screen TV', 'Mini fridge'], description: 'Spacious ground floor room with extra storage.' },
+      { roomNumber: 5, floor: 'First Floor', capacity: 1, rentAmount: 4000, amenities: ['WiFi', 'AC', 'Private Bathroom', 'Queen-sized bed', 'Flat-screen TV', 'Mini fridge'], description: 'Upper floor room with balcony and city view.' },
+      { roomNumber: 6, floor: 'First Floor', capacity: 1, rentAmount: 4000, amenities: ['WiFi', 'AC', 'Private Bathroom', 'Queen-sized bed', 'Flat-screen TV', 'Mini fridge'], description: 'Premium room with extra space and modern furnishings.' },
+      { roomNumber: 7, floor: 'First Floor', capacity: 1, rentAmount: 4000, amenities: ['WiFi', 'AC', 'Private Bathroom', 'Queen-sized bed', 'Flat-screen TV', 'Mini fridge'], description: 'Quiet room ideal for professionals and students.' },
+      { roomNumber: 8, floor: 'First Floor', capacity: 2, rentAmount: 5500, amenities: ['WiFi', 'AC', 'Private Bathroom', 'Queen-sized bed', 'Flat-screen TV', 'Mini fridge'], description: 'Large room with double capacity, perfect for sharing.' },
     ];
 
     const rooms = await Room.insertMany(roomsData);

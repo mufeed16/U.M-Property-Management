@@ -7,8 +7,9 @@ const roomSchema = new mongoose.Schema({
     unique: true,
   },
   floor: {
-    type: Number,
-    default: 1,
+    type: String,
+    enum: ['Ground Floor', 'First Floor', 'Second Floor', 'Third Floor', 'Fourth Floor', 'Fifth Floor'],
+    default: 'Ground Floor',
   },
   capacity: {
     type: Number,
