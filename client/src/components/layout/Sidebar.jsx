@@ -15,7 +15,7 @@ export function Sidebar({ isOpen, onClose }) {
       )}
 
       <aside
-        className={`fixed lg:static inset-y-0 left-0 z-50 w-64 transform transition-all duration-300 ease-in-out ${
+        className={`fixed lg:static inset-y-0 left-0 z-50 w-64 flex flex-col transform transition-all duration-300 ease-in-out ${
           isOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'
         }`}
         style={{
@@ -80,7 +80,7 @@ export function Sidebar({ isOpen, onClose }) {
           ))}
         </nav>
 
-        <div className="absolute bottom-0 left-0 right-0 p-4 hidden lg:block">
+        <div className="mt-auto p-4 hidden lg:block">
           <div className="rounded-xl p-4"
             style={{
               background: 'rgba(59, 130, 246, 0.05)',

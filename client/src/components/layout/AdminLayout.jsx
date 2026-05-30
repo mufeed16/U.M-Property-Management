@@ -14,7 +14,7 @@ export function AdminLayout() {
       <MotionBackground />
 
       {/* Desktop sidebar */}
-      <div className="hidden lg:block">
+      <div className="hidden lg:block relative z-20">
         <Sidebar isOpen={true} onClose={() => {}} />
       </div>
 
@@ -23,7 +23,7 @@ export function AdminLayout() {
         <Sidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
       </div>
 
-      <div className="flex-1 flex flex-col overflow-hidden relative z-10">
+      <div className="flex-1 flex flex-col overflow-hidden relative z-30">
         <Navbar onToggleSidebar={() => setSidebarOpen(!sidebarOpen)} />
 
         <main className="flex-1 overflow-y-auto p-4 pb-24 lg:p-6 lg:pb-6">

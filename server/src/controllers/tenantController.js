@@ -8,7 +8,7 @@ const getAllTenants = async (req, res, next) => {
   try {
     const tenants = await User.find({ role: 'tenant' })
       .select('-password')
-      .populate('room', 'roomNumber floor status')
+      .populate('room', 'roomNumber floor status rentAmount')
       .sort({ createdAt: -1 });
 
     res.json({ tenants });

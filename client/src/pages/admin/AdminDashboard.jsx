@@ -1,8 +1,10 @@
 import { useState } from 'react';
 import { useFetch } from '../../hooks/useFetch';
+import api from '../../api/axios';
 import { StatsCard } from '../../components/ui/StatsCard';
 import { LoadingSpinner } from '../../components/ui/LoadingSpinner';
 import { RentPlanner } from '../../components/ui/RentPlanner';
+import { exportAllRoomsPDF } from '../../utils/exportRentPDF';
 import { HiOutlineOfficeBuilding, HiOutlineUsers, HiOutlineCheckCircle, HiOutlineExclamationCircle, HiOutlineCurrencyDollar } from 'react-icons/hi';
 
 function TenantPills({ tenants, selected, onChange }) {
@@ -63,6 +65,7 @@ export function AdminDashboard() {
 
   const [selectedTenant, setSelectedTenant] = useState(null);
   const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
+  const [exportingAll, setExportingAll] = useState(false);
 
   if (loading || tenantsLoading) return <LoadingSpinner />;
 
@@ -78,6 +81,41 @@ export function AdminDashboard() {
   const tenants = tenantsData?.tenants || [];
   const currentYear = new Date().getFullYear();
   const years = [currentYear - 2, currentYear - 1, currentYear, currentYear + 1, currentYear + 2];
+
+  const handleExportAll = async () => {
+    setExportingAll(true);
+    try {
+      const roomsData = [];
+      const tenantsWithRooms = tenants.filter((t) => t.room);
+
+      for (const tenant of tenantsWithRooms) {
+        try {
+          const { data: paymentData } = await api.get(`/payments?tenantId=${tenant._id}&year=${selectedYear}`);
+          roomsData.push({
+            roomNumber: tenant.room.roomNumber,
+            tenantName: tenant.name,
+            rentAmount: tenant.room.rentAmount || 0,
+            year: selectedYear,
+            payments: paymentData.payments || [],
+          });
+        } catch {
+          roomsData.push({
+            roomNumber: tenant.room.roomNumber,
+            tenantName: tenant.name,
+            rentAmount: tenant.room.rentAmount || 0,
+            year: selectedYear,
+            payments: [],
+          });
+        }
+      }
+
+      if (roomsData.length === 0) return;
+      roomsData.sort((a, b) => a.roomNumber - b.roomNumber);
+      exportAllRoomsPDF(roomsData);
+    } finally {
+      setExportingAll(false);
+    }
+  };
 
   return (
     <div className="space-y-4 lg:space-y-6">
@@ -107,11 +145,27 @@ export function AdminDashboard() {
 
       {/* Rent Planner */}
       <div className="space-y-3 lg:space-y-4">
-        <div className="flex items-center gap-2">
-          <div className="p-1.5 lg:p-2 rounded-xl bg-blue-50">
-            <HiOutlineCurrencyDollar className="w-4 h-4 lg:w-5 lg:h-5 text-blue-600" />
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <div className="p-1.5 lg:p-2 rounded-xl bg-blue-50">
+              <HiOutlineCurrencyDollar className="w-4 h-4 lg:w-5 lg:h-5 text-blue-600" />
+            </div>
+            <h3 className="text-base lg:text-lg font-semibold text-gray-800">Rent Planner</h3>
           </div>
-          <h3 className="text-base lg:text-lg font-semibold text-gray-800">Rent Planner</h3>
+          <button
+            onClick={handleExportAll}
+            disabled={exportingAll}
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold text-blue-600 bg-blue-50 hover:bg-blue-100 border border-blue-200/60 transition-all disabled:opacity-50"
+          >
+            {exportingAll ? (
+              <div className="w-3.5 h-3.5 border-2 border-blue-300 border-t-blue-600 rounded-full animate-spin" />
+            ) : (
+              <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+              </svg>
+            )}
+            Export All
+          </button>
         </div>
 
         <div className="glass-card rounded-2xl p-3 lg:p-4 space-y-2.5">
@@ -121,7 +175,13 @@ export function AdminDashboard() {
 
         {selectedTenant ? (
           selectedTenant.room ? (
-            <RentPlanner tenantId={selectedTenant._id} year={selectedYear} />
+            <RentPlanner
+              tenantId={selectedTenant._id}
+              year={selectedYear}
+              tenantName={selectedTenant.name}
+              roomNumber={selectedTenant.room?.roomNumber}
+              rentAmount={selectedTenant.room?.rentAmount}
+            />
           ) : (
             <div className="bg-yellow-50 border border-yellow-200 text-yellow-700 p-3 lg:p-4 rounded-xl text-sm">
               {selectedTenant.name} has no room assigned.
