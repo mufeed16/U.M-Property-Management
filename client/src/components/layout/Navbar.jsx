@@ -1,5 +1,6 @@
 import { useAuth } from '../../hooks/useAuth';
 import { HiOutlineLogout } from 'react-icons/hi';
+import { NotificationBell } from '../ui/NotificationBell';
 
 export function Navbar({ onToggleSidebar }) {
   const { user, logout } = useAuth();
@@ -32,6 +33,7 @@ export function Navbar({ onToggleSidebar }) {
 
         {user && (
           <div className="flex items-center gap-3">
+            {user.role !== 'viewer' && <NotificationBell />}
             <div className="hidden sm:block text-right">
               <p className="text-sm font-medium text-gray-800">{user.name}</p>
               <p className="text-xs text-gray-400 capitalize">{user.role}</p>

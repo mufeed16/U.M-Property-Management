@@ -439,8 +439,8 @@ export function exportAllRoomsPDF(roomsData) {
 
       y += 7;
     });
-
-    y += 5;
+        
+    y += 5; 
     if (y > 250) {
       doc.addPage();
       y = 20;

@@ -6,6 +6,7 @@ import { StatsCard } from '../../components/ui/StatsCard';
 import { LoadingSpinner } from '../../components/ui/LoadingSpinner';
 import { RentPlanner } from '../../components/ui/RentPlanner';
 import { exportAllRoomsPDF } from '../../utils/exportRentPDF';
+import { RentHeatmap } from '../../components/ui/RentHeatmap';
 import { HiOutlineOfficeBuilding, HiOutlineUsers, HiOutlineCheckCircle, HiOutlineExclamationCircle, HiOutlineCurrencyDollar } from 'react-icons/hi';
 
 function TenantPills({ tenants, selected, onChange }) {
@@ -133,6 +134,8 @@ export function AdminDashboard() {
         <StatsCard title="Vacant" value={stats.vacantRooms} icon={<HiOutlineExclamationCircle className="w-5 h-5 lg:w-6 lg:h-6" />} color="yellow" />
         <StatsCard title="Tenants" value={stats.totalTenants} icon={<HiOutlineUsers className="w-5 h-5 lg:w-6 lg:h-6" />} color="purple" />
       </div>
+
+      <RentHeatmap year={selectedYear} />
 
       <div className="glass-card rounded-2xl p-4 lg:p-6">
         <h3 className="text-base lg:text-lg font-semibold text-gray-800 mb-3">Quick Summary</h3>

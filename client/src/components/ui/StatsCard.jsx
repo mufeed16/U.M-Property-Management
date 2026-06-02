@@ -1,3 +1,29 @@
+import { useState, useEffect, useRef } from 'react';
+
+function AnimatedNumber({ value, duration = 1200 }) {
+  const [display, setDisplay] = useState(0);
+  const startRef = useRef(null);
+  const frameRef = useRef(null);
+
+  useEffect(() => {
+    if (value === 0) { setDisplay(0); return; }
+
+    const animate = (timestamp) => {
+      if (!startRef.current) startRef.current = timestamp;
+      const progress = Math.min((timestamp - startRef.current) / duration, 1);
+      const eased = 1 - Math.pow(1 - progress, 3);
+      setDisplay(Math.round(eased * value));
+      if (progress < 1) frameRef.current = requestAnimationFrame(animate);
+    };
+
+    startRef.current = null;
+    frameRef.current = requestAnimationFrame(animate);
+    return () => cancelAnimationFrame(frameRef.current);
+  }, [value, duration]);
+
+  return <>{display}</>;
+}
+
 export function StatsCard({ title, value, icon, color = 'blue' }) {
   const colorStyles = {
     blue: {
@@ -52,7 +78,9 @@ export function StatsCard({ title, value, icon, color = 'blue' }) {
           </div>
           <div className="min-w-0">
             <p className="text-xs lg:text-sm font-medium text-gray-500 truncate">{title}</p>
-            <p className="text-xl lg:text-3xl font-bold text-gray-800 mt-0.5">{value}</p>
+            <p className="text-xl lg:text-3xl font-bold text-gray-800 mt-0.5">
+              <AnimatedNumber value={value} />
+            </p>
           </div>
         </div>
       </div>
