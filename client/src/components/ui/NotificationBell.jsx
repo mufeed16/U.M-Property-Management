@@ -11,7 +11,7 @@ export function NotificationBell() {
   const currentYear = new Date().getFullYear();
 
   const overdue = payments.filter(
-    (p) => p.year === currentYear && p.amountPaid < p.amountDue
+    (p) => p.tenant && p.room && p.year === currentYear && p.amountPaid < p.amountDue
   );
 
   useEffect(() => {
