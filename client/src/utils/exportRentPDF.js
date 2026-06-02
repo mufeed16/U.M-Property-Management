@@ -451,7 +451,7 @@ export function exportAllRoomsPDF(roomsData) {
     y += 8;
 
     const totalDue = rentAmount * 12;
-    const remaining = totalDue - totalPaid;
+    const remaining = totalDue - totalPaid;but
 
     doc.setFontSize(9);
     doc.setFont('helvetica', 'bold');
