@@ -11,7 +11,7 @@ const authorize = require('../middleware/role');
 
 const router = express.Router();
 
-router.get('/', auth, authorize('admin'), getAllRooms);
+router.get('/', auth, authorize('admin', 'viewer'), getAllRooms);
 router.get('/:id', auth, getRoomById);
 router.post('/', auth, authorize('admin'), createRoom);
 router.put('/:id', auth, authorize('admin'), updateRoom);

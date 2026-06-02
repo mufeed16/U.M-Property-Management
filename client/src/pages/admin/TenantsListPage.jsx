@@ -1,12 +1,15 @@
-import { useState } from 'react';
+import { useState, useContext } from 'react';
 import { Link } from 'react-router-dom';
 import { useFetch } from '../../hooks/useFetch';
+import { AuthContext } from '../../context/AuthContext';
 import { LoadingSpinner } from '../../components/ui/LoadingSpinner';
 import { Modal } from '../../components/ui/Modal';
 import api from '../../api/axios';
 import { HiOutlinePencil, HiOutlineTrash, HiOutlinePlus } from 'react-icons/hi';
 
 export function TenantsListPage() {
+  const { user } = useContext(AuthContext);
+  const isViewer = user?.role === 'viewer';
   const { data, loading, error, refetch } = useFetch('/tenants');
   const [deleteModal, setDeleteModal] = useState(null);
   const [deleting, setDeleting] = useState(false);
@@ -36,14 +39,16 @@ export function TenantsListPage() {
           <h2 className="text-xl lg:text-2xl font-bold text-gray-800">Tenants</h2>
           <p className="text-sm text-gray-500 mt-0.5">{tenants.length} total tenants</p>
         </div>
-        <Link
-          to="/tenants/new"
-          className="btn-3d inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-white font-medium text-sm"
-          style={{ background: 'linear-gradient(135deg, #3b82f6, #6366f1)' }}
-        >
-          <HiOutlinePlus className="w-5 h-5" />
-          <span className="hidden sm:inline">Add Tenant</span>
-        </Link>
+        {!isViewer && (
+          <Link
+            to="/tenants/new"
+            className="btn-3d inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-white font-medium text-sm"
+            style={{ background: 'linear-gradient(135deg, #3b82f6, #6366f1)' }}
+          >
+            <HiOutlinePlus className="w-5 h-5" />
+            <span className="hidden sm:inline">Add Tenant</span>
+          </Link>
+        )}
       </div>
 
       {error && <div className="bg-red-50 border border-red-200 text-red-700 p-3 rounded-xl text-sm">{error}</div>}
@@ -60,14 +65,16 @@ export function TenantsListPage() {
                   <h4 className="font-bold text-gray-800 text-lg">{tenant.name}</h4>
                   <p className="text-xs text-gray-500">{tenant.email}</p>
                 </div>
-                <div className="flex gap-1">
-                  <Link to={`/tenants/${tenant._id}/edit`} className="p-2 text-gray-400 hover:text-blue-600 rounded-lg">
-                    <HiOutlinePencil className="w-4 h-4" />
-                  </Link>
-                  <button onClick={() => setDeleteModal(tenant)} className="p-2 text-gray-400 hover:text-red-600 rounded-lg">
-                    <HiOutlineTrash className="w-4 h-4" />
-                  </button>
-                </div>
+                {!isViewer && (
+                  <div className="flex gap-1">
+                    <Link to={`/tenants/${tenant._id}/edit`} className="p-2 text-gray-400 hover:text-blue-600 rounded-lg">
+                      <HiOutlinePencil className="w-4 h-4" />
+                    </Link>
+                    <button onClick={() => setDeleteModal(tenant)} className="p-2 text-gray-400 hover:text-red-600 rounded-lg">
+                      <HiOutlineTrash className="w-4 h-4" />
+                    </button>
+                  </div>
+                )}
               </div>
               <div className="flex gap-4 text-sm">
                 <div>
@@ -93,7 +100,7 @@ export function TenantsListPage() {
               <th className="px-6 py-4 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Email</th>
               <th className="px-6 py-4 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Phone</th>
               <th className="px-6 py-4 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Room</th>
-              <th className="px-6 py-4 text-right text-xs font-medium text-gray-400 uppercase tracking-wider">Actions</th>
+              {!isViewer && <th className="px-6 py-4 text-right text-xs font-medium text-gray-400 uppercase tracking-wider">Actions</th>}
             </tr>
           </thead>
           <tbody className="divide-y divide-gray-100">
@@ -103,16 +110,18 @@ export function TenantsListPage() {
                 <td className="px-6 py-4 text-gray-600">{tenant.email}</td>
                 <td className="px-6 py-4 text-gray-600">{tenant.phone || '—'}</td>
                 <td className="px-6 py-4 text-gray-600">{tenant.room ? `Room ${tenant.room.roomNumber}` : '—'}</td>
-                <td className="px-6 py-4 text-right">
-                  <div className="flex items-center justify-end gap-2">
-                    <Link to={`/tenants/${tenant._id}/edit`} className="p-2 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-all">
-                      <HiOutlinePencil className="w-5 h-5" />
-                    </Link>
-                    <button onClick={() => setDeleteModal(tenant)} className="p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-all">
-                      <HiOutlineTrash className="w-5 h-5" />
-                    </button>
-                  </div>
-                </td>
+                {!isViewer && (
+                  <td className="px-6 py-4 text-right">
+                    <div className="flex items-center justify-end gap-2">
+                      <Link to={`/tenants/${tenant._id}/edit`} className="p-2 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-all">
+                        <HiOutlinePencil className="w-5 h-5" />
+                      </Link>
+                      <button onClick={() => setDeleteModal(tenant)} className="p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-all">
+                        <HiOutlineTrash className="w-5 h-5" />
+                      </button>
+                    </div>
+                  </td>
+                )}
               </tr>
             ))}
           </tbody>

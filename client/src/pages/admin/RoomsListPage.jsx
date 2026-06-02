@@ -1,6 +1,7 @@
-import { useState } from 'react';
+import { useState, useContext } from 'react';
 import { Link } from 'react-router-dom';
 import { useFetch } from '../../hooks/useFetch';
+import { AuthContext } from '../../context/AuthContext';
 import { LoadingSpinner } from '../../components/ui/LoadingSpinner';
 import { Badge } from '../../components/ui/Badge';
 import { Modal } from '../../components/ui/Modal';
@@ -14,6 +15,8 @@ const statusConfig = {
 };
 
 export function RoomsListPage() {
+  const { user } = useContext(AuthContext);
+  const isViewer = user?.role === 'viewer';
   const { data, loading, error, refetch } = useFetch('/rooms');
   const [filter, setFilter] = useState('all');
   const [deleteModal, setDeleteModal] = useState(null);
@@ -45,14 +48,16 @@ export function RoomsListPage() {
           <h2 className="text-xl lg:text-2xl font-bold text-gray-800">Rooms</h2>
           <p className="text-sm text-gray-500 mt-0.5">{rooms.length} total rooms</p>
         </div>
-        <Link
-          to="/rooms/new"
-          className="btn-3d inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-white font-medium text-sm"
-          style={{ background: 'linear-gradient(135deg, #3b82f6, #6366f1)' }}
-        >
-          <HiOutlinePlus className="w-5 h-5" />
-          <span className="hidden sm:inline">Add Room</span>
-        </Link>
+        {!isViewer && (
+          <Link
+            to="/rooms/new"
+            className="btn-3d inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-white font-medium text-sm"
+            style={{ background: 'linear-gradient(135deg, #3b82f6, #6366f1)' }}
+          >
+            <HiOutlinePlus className="w-5 h-5" />
+            <span className="hidden sm:inline">Add Room</span>
+          </Link>
+        )}
       </div>
 
       {error && <div className="bg-red-50 border border-red-200 text-red-700 p-3 rounded-xl text-sm">{error}</div>}
@@ -109,14 +114,16 @@ export function RoomsListPage() {
                       <p className="text-gray-700 font-medium">₹{room.rentAmount}</p>
                     </div>
                   </div>
-                  <div className="flex gap-1">
-                    <Link to={`/rooms/${room._id}/edit`} className="p-2 text-gray-400 hover:text-blue-600 rounded-lg">
-                      <HiOutlinePencil className="w-4 h-4" />
-                    </Link>
-                    <button onClick={() => setDeleteModal(room)} className="p-2 text-gray-400 hover:text-red-600 rounded-lg">
-                      <HiOutlineTrash className="w-4 h-4" />
-                    </button>
-                  </div>
+                  {!isViewer && (
+                    <div className="flex gap-1">
+                      <Link to={`/rooms/${room._id}/edit`} className="p-2 text-gray-400 hover:text-blue-600 rounded-lg">
+                        <HiOutlinePencil className="w-4 h-4" />
+                      </Link>
+                      <button onClick={() => setDeleteModal(room)} className="p-2 text-gray-400 hover:text-red-600 rounded-lg">
+                        <HiOutlineTrash className="w-4 h-4" />
+                      </button>
+                    </div>
+                  )}
                 </div>
               </div>
             ))
@@ -133,7 +140,7 @@ export function RoomsListPage() {
                 <th className="px-6 py-4 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Status</th>
                 <th className="px-6 py-4 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Tenant</th>
                 <th className="px-6 py-4 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Rent</th>
-                <th className="px-6 py-4 text-right text-xs font-medium text-gray-400 uppercase tracking-wider">Actions</th>
+                {!isViewer && <th className="px-6 py-4 text-right text-xs font-medium text-gray-400 uppercase tracking-wider">Actions</th>}
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-100">
@@ -144,16 +151,18 @@ export function RoomsListPage() {
                   <td className="px-6 py-4"><Badge variant={statusConfig[room.status].variant}>{statusConfig[room.status].label}</Badge></td>
                   <td className="px-6 py-4 text-gray-600">{room.tenant?.name || '—'}</td>
                   <td className="px-6 py-4 text-gray-600">₹{room.rentAmount}</td>
-                  <td className="px-6 py-4 text-right">
-                    <div className="flex items-center justify-end gap-2">
-                      <Link to={`/rooms/${room._id}/edit`} className="p-2 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-all">
-                        <HiOutlinePencil className="w-5 h-5" />
-                      </Link>
-                      <button onClick={() => setDeleteModal(room)} className="p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-all">
-                        <HiOutlineTrash className="w-5 h-5" />
-                      </button>
-                    </div>
-                  </td>
+                  {!isViewer && (
+                    <td className="px-6 py-4 text-right">
+                      <div className="flex items-center justify-end gap-2">
+                        <Link to={`/rooms/${room._id}/edit`} className="p-2 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-all">
+                          <HiOutlinePencil className="w-5 h-5" />
+                        </Link>
+                        <button onClick={() => setDeleteModal(room)} className="p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-all">
+                          <HiOutlineTrash className="w-5 h-5" />
+                        </button>
+                      </div>
+                    </td>
+                  )}
                 </tr>
               ))}
             </tbody>

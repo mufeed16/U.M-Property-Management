@@ -5,7 +5,7 @@ const authorize = require('../middleware/role');
 
 const router = express.Router();
 
-router.get('/', auth, authorize('admin'), getPayments);
+router.get('/', auth, authorize('admin', 'viewer'), getPayments);
 router.post('/', auth, authorize('admin'), createPayment);
 router.put('/:id', auth, authorize('admin'), updatePayment);
 router.delete('/:id', auth, authorize('admin'), deletePayment);

@@ -1,5 +1,6 @@
-import { useState } from 'react';
+import { useState, useContext } from 'react';
 import { useFetch } from '../../hooks/useFetch';
+import { AuthContext } from '../../context/AuthContext';
 import api from '../../api/axios';
 import { StatsCard } from '../../components/ui/StatsCard';
 import { LoadingSpinner } from '../../components/ui/LoadingSpinner';
@@ -60,6 +61,8 @@ function YearPills({ years, selected, onChange }) {
 }
 
 export function AdminDashboard() {
+  const { user } = useContext(AuthContext);
+  const isViewer = user?.role === 'viewer';
   const { data, loading, error } = useFetch('/dashboard/stats');
   const { data: tenantsData, loading: tenantsLoading } = useFetch('/tenants');
 
@@ -152,20 +155,22 @@ export function AdminDashboard() {
             </div>
             <h3 className="text-base lg:text-lg font-semibold text-gray-800">Rent Planner</h3>
           </div>
-          <button
-            onClick={handleExportAll}
-            disabled={exportingAll}
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold text-blue-600 bg-blue-50 hover:bg-blue-100 border border-blue-200/60 transition-all disabled:opacity-50"
-          >
-            {exportingAll ? (
-              <div className="w-3.5 h-3.5 border-2 border-blue-300 border-t-blue-600 rounded-full animate-spin" />
-            ) : (
-              <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-              </svg>
-            )}
-            Export All
-          </button>
+          {!isViewer && (
+            <button
+              onClick={handleExportAll}
+              disabled={exportingAll}
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold text-blue-600 bg-blue-50 hover:bg-blue-100 border border-blue-200/60 transition-all disabled:opacity-50"
+            >
+              {exportingAll ? (
+                <div className="w-3.5 h-3.5 border-2 border-blue-300 border-t-blue-600 rounded-full animate-spin" />
+              ) : (
+                <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                </svg>
+              )}
+              Export All
+            </button>
+          )}
         </div>
 
         <div className="glass-card rounded-2xl p-3 lg:p-4 space-y-2.5">

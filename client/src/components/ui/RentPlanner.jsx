@@ -1,4 +1,5 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useContext } from 'react';
+import { AuthContext } from '../../context/AuthContext';
 import api from '../../api/axios';
 import { LoadingSpinner } from './LoadingSpinner';
 import { exportSingleRoomPDF } from '../../utils/exportRentPDF';
@@ -52,6 +53,8 @@ function StatusBadge({ status }) {
 }
 
 export function RentPlanner({ tenantId, year, tenantName, roomNumber, rentAmount: rentAmountProp }) {
+  const { user } = useContext(AuthContext);
+  const isViewer = user?.role === 'viewer';
   const [payments, setPayments] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -360,14 +363,16 @@ export function RentPlanner({ tenantId, year, tenantName, roomNumber, rentAmount
                             </p>
                           </div>
                         </div>
-                        <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                          <button onClick={() => startEdit(payment)} className="p-1.5 rounded-lg text-blue-500 hover:bg-blue-50 transition-colors">
-                            <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" /></svg>
-                          </button>
-                          <button onClick={() => deletePayment(payment._id)} className="p-1.5 rounded-lg text-red-400 hover:bg-red-50 transition-colors">
-                            <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
-                          </button>
-                        </div>
+                        {!isViewer && (
+                          <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                            <button onClick={() => startEdit(payment)} className="p-1.5 rounded-lg text-blue-500 hover:bg-blue-50 transition-colors">
+                              <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" /></svg>
+                            </button>
+                            <button onClick={() => deletePayment(payment._id)} className="p-1.5 rounded-lg text-red-400 hover:bg-red-50 transition-colors">
+                              <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
+                            </button>
+                          </div>
+                        )}
                       </div>
                     );
                   })}
@@ -394,14 +399,14 @@ export function RentPlanner({ tenantId, year, tenantName, roomNumber, rentAmount
                         </button>
                       </div>
                     </div>
-                  ) : (
+                  ) : !isViewer ? (
                     <button
                       onClick={() => startAdd(month)}
                       className="w-full mt-1 py-2 rounded-xl text-sm font-medium text-blue-600 bg-blue-50/50 active:bg-blue-100 border border-dashed border-blue-200 transition-colors"
                     >
                       + Add Payment
                     </button>
-                  )}
+                  ) : null}
                 </div>
               )}
             </div>
@@ -420,7 +425,7 @@ export function RentPlanner({ tenantId, year, tenantName, roomNumber, rentAmount
                 <th className="px-5 py-3.5 text-left text-[11px] font-semibold text-gray-400 uppercase tracking-wider">Amount</th>
                 <th className="px-5 py-3.5 text-left text-[11px] font-semibold text-gray-400 uppercase tracking-wider">Progress</th>
                 <th className="px-5 py-3.5 text-left text-[11px] font-semibold text-gray-400 uppercase tracking-wider">Status</th>
-                <th className="px-5 py-3.5 text-right text-[11px] font-semibold text-gray-400 uppercase tracking-wider">Actions</th>
+                {!isViewer && <th className="px-5 py-3.5 text-right text-[11px] font-semibold text-gray-400 uppercase tracking-wider">Actions</th>}
               </tr>
             </thead>
             <tbody>
@@ -458,9 +463,11 @@ export function RentPlanner({ tenantId, year, tenantName, roomNumber, rentAmount
                         </div>
                       </td>
                       <td className="px-5 py-3"><StatusBadge status={status} /></td>
-                      <td className="px-5 py-3 text-right">
-                        <button onClick={() => startAdd(month)} className="text-sm font-medium text-blue-600 hover:text-blue-700 transition-colors">+ Add</button>
-                      </td>
+                      {!isViewer && (
+                        <td className="px-5 py-3 text-right">
+                          <button onClick={() => startAdd(month)} className="text-sm font-medium text-blue-600 hover:text-blue-700 transition-colors">+ Add</button>
+                        </td>
+                      )}
                     </tr>
                   );
                 }
@@ -519,32 +526,34 @@ export function RentPlanner({ tenantId, year, tenantName, roomNumber, rentAmount
                       <td className="px-5 py-3">
                         {isFirst ? <StatusBadge status={status} /> : null}
                       </td>
-                      <td className="px-5 py-3 text-right">
-                        {isEditing ? (
-                          <div className="flex gap-2 justify-end">
-                            <button onClick={() => savePayment(payment._id)} disabled={saving} className="px-3 py-1 rounded-lg text-sm font-medium text-white bg-blue-500 hover:bg-blue-600 disabled:opacity-50 transition-colors">
-                              {saving ? '...' : 'Save'}
-                            </button>
-                            <button onClick={cancelEdit} className="px-3 py-1 rounded-lg text-sm text-gray-500 hover:bg-gray-100 transition-colors">Cancel</button>
-                          </div>
-                        ) : (
-                          <div className="flex gap-1 justify-end">
-                            <button onClick={() => startEdit(payment)} className="p-1.5 rounded-lg text-blue-500 hover:bg-blue-50 transition-colors" title="Edit">
-                              <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" /></svg>
-                            </button>
-                            <button onClick={() => deletePayment(payment._id)} className="p-1.5 rounded-lg text-red-400 hover:bg-red-50 transition-colors" title="Delete">
-                              <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
-                            </button>
-                            {isFirst && <button onClick={() => startAdd(month)} className="p-1.5 rounded-lg text-emerald-500 hover:bg-emerald-50 transition-colors" title="Add payment">+</button>}
-                          </div>
-                        )}
-                      </td>
+                      {!isViewer && (
+                        <td className="px-5 py-3 text-right">
+                          {isEditing ? (
+                            <div className="flex gap-2 justify-end">
+                              <button onClick={() => savePayment(payment._id)} disabled={saving} className="px-3 py-1 rounded-lg text-sm font-medium text-white bg-blue-500 hover:bg-blue-600 disabled:opacity-50 transition-colors">
+                                {saving ? '...' : 'Save'}
+                              </button>
+                              <button onClick={cancelEdit} className="px-3 py-1 rounded-lg text-sm text-gray-500 hover:bg-gray-100 transition-colors">Cancel</button>
+                            </div>
+                          ) : (
+                            <div className="flex gap-1 justify-end">
+                              <button onClick={() => startEdit(payment)} className="p-1.5 rounded-lg text-blue-500 hover:bg-blue-50 transition-colors" title="Edit">
+                                <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" /></svg>
+                              </button>
+                              <button onClick={() => deletePayment(payment._id)} className="p-1.5 rounded-lg text-red-400 hover:bg-red-50 transition-colors" title="Delete">
+                                <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
+                              </button>
+                              {isFirst && <button onClick={() => startAdd(month)} className="p-1.5 rounded-lg text-emerald-500 hover:bg-emerald-50 transition-colors" title="Add payment">+</button>}
+                            </div>
+                          )}
+                        </td>
+                      )}
                     </tr>
                   );
                 });
 
                 /* Add row */
-                if (addingMonth === month) {
+                if (addingMonth === month && !isViewer) {
                   rows.push(
                     <tr key={`${month}-add`} className="bg-emerald-50/20 border-b border-gray-50">
                       <td className="px-5 py-3"><span className="pl-8 text-gray-300 text-xs">↳ new</span></td>

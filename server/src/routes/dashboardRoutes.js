@@ -5,6 +5,6 @@ const authorize = require('../middleware/role');
 
 const router = express.Router();
 
-router.get('/stats', auth, authorize('admin'), getStats);
+router.get('/stats', auth, authorize('admin', 'viewer'), getStats);
 
 module.exports = router;
