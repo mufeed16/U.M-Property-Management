@@ -12,7 +12,7 @@ export function LoginPage() {
   const navigate = useNavigate();
 
   if (user) {
-    return <Navigate to={user.role === 'admin' ? '/' : '/my-room'} replace />;
+    return <Navigate to={(user.role === 'admin' || user.role === 'viewer') ? '/' : '/my-room'} replace />;
   }
 
   const handleSubmit = async (e) => {
@@ -21,7 +21,7 @@ export function LoginPage() {
     setSubmitting(true);
     try {
       const userData = await login(email, password);
-      navigate(userData.role === 'admin' ? '/' : '/my-room');
+      navigate((userData.role === 'admin' || userData.role === 'viewer') ? '/' : '/my-room');
     } catch (err) {
       setError(err.response?.data?.message || 'Login failed');
     } finally {
