@@ -20,9 +20,10 @@ export function RentHeatmap({ year = new Date().getFullYear() }) {
   const payments = paymentsData?.payments || [];
 
   const getStatus = (tenantId, month) => {
-    const monthPayments = payments.filter(
-      (p) => p.tenant === tenantId && p.month === month && p.year === year
-    );
+    const monthPayments = payments.filter((p) => {
+      const pid = typeof p.tenant === 'object' ? p.tenant?._id : p.tenant;
+      return pid === tenantId && p.month === month && p.year === year;
+    });
     if (monthPayments.length === 0) {
       const monthIdx = FULL_MONTHS.indexOf(month);
       const now = new Date();

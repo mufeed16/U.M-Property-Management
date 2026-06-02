@@ -117,8 +117,19 @@ const getPayments = async (req, res, next) => {
   try {
     const { tenantId, year } = req.query;
 
-    if (!tenantId || !year) {
-      return res.status(400).json({ message: 'tenantId and year are required' });
+    // If no tenantId, return all payments (for heatmap, notifications, etc.)
+    if (!tenantId) {
+      const filter = {};
+      if (year) filter.year = Number(year);
+      const payments = await Payment.find(filter)
+        .populate('tenant', 'name')
+        .populate('room', 'roomNumber')
+        .sort({ month: 1, datePaid: 1 });
+      return res.json({ payments });
+    }
+
+    if (!year) {
+      return res.status(400).json({ message: 'year is required when tenantId is provided' });
     }
 
     const payments = await Payment.find({
