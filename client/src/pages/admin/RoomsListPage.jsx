@@ -116,11 +116,11 @@ export function RoomsListPage() {
                   </div>
                   {!isViewer && (
                     <div className="flex gap-1">
-                      <Link to={`/rooms/${room._id}/edit`} className="p-2 text-gray-400 hover:text-blue-600 rounded-lg">
-                        <HiOutlinePencil className="w-4 h-4" />
+                      <Link to={`/rooms/${room._id}/edit`} className="p-2.5 text-blue-500 hover:text-blue-700 hover:bg-blue-50 rounded-xl transition-all">
+                        <HiOutlinePencil className="w-5 h-5" />
                       </Link>
-                      <button onClick={() => setDeleteModal(room)} className="p-2 text-gray-400 hover:text-red-600 rounded-lg">
-                        <HiOutlineTrash className="w-4 h-4" />
+                      <button onClick={() => setDeleteModal(room)} className="p-2.5 text-red-400 hover:text-red-600 hover:bg-red-50 rounded-xl transition-all">
+                        <HiOutlineTrash className="w-5 h-5" />
                       </button>
                     </div>
                   )}
