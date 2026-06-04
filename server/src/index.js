@@ -44,12 +44,16 @@ app.get('/api/health', (req, res) => {
   res.json({ status: 'ok', timestamp: new Date().toISOString() });
 });
 
-// SPA catch-all for production
-if (process.env.NODE_ENV === 'production') {
-  app.get('*', (req, res) => {
-    res.sendFile(path.join(__dirname, '../../client/dist/index.html'));
-  });
-}
+// SPA catch-all for all environments
+app.get('*', (req, res) => {
+  // If a static file exists, serve it
+  const staticFile = path.resolve(__dirname, '../../client/dist', req.path);
+  if (require('fs').existsSync(staticFile)) {
+    return res.sendFile(staticFile);
+  }
+  // Otherwise serve the React entry point
+  res.sendFile(path.join(__dirname, '../../client/dist/index.html'));
+});
 
 // Error handler (must be last)
 app.use(errorHandler);
