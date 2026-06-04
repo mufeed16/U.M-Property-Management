@@ -162,9 +162,5 @@ To check the live site with viewer privileges:
 | client    | `npm run build` | Build for production         |
 | client    | `npm run lint`  | Run ESLint                   |
 
-## Credentials (Seed Data - Local Dev Only)
-
-- **Admin**: admin@umcottage.com / admin123
-- **Viewer**: viewer@umcottage.com / viewer123
 
 > 🔒 **Security**: Rotate any passwords/API keys shared in chat. Live credentials are managed via platform secrets.
